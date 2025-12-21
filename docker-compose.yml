@@ -1,0 +1,44 @@
+version: '3.9'
+services:
+  mysql:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: w_introduccion
+    ports:
+      - "3310:3306"
+    volumes:
+      - ./.srv/database:/var/lib/mysql
+  wordpress:
+    image: wordpress:latest
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: mysql:3306
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: 123456
+      WORDPRESS_DB_NAME: w_introduccion
+    ports:
+      - "8000:80"
+    volumes:
+      - ./.srv/wordpress:/var/www/html
+      - ./.srv/custom.ini:/usr/local/etc/php/conf.d/custom.ini
+    depends_on:
+      - mysql
+    links:
+      - mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    environment:
+      MYSQL_USERNAME: root
+      MYSQL_ROOT_PASSWORD: 123456
+      PMA_HOST: mysql
+    ports:
+      - "8181:80"
+    depends_on:
+      - mysql 
+    links:
+      - mysql
+     
